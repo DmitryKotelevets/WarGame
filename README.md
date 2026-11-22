@@ -1,0 +1,52 @@
+# RTS (рабочее название)
+
+Стратегия в реальном времени на Rust. Подробности в `docs/design.md`.
+
+## Что здесь есть
+
+```
+CLAUDE.md            правила для агента
+Cargo.toml           workspace
+crates/sim           детерминированное ядро игры
+crates/client        клиент (Bevy подключается на шаге 1.5)
+crates/tools         запуск без окна, позже MCP-сервер
+docs/design.md       какая игра
+docs/roadmap.md      вехи и шаги
+docs/process.md      как идёт работа
+docs/decisions.md    принятые и открытые решения
+docs/ideas.md        отложенное
+docs/stages/         спецификации вех и файлы шагов
+```
+
+## Проверка
+
+Нужен стабильный Rust 1.85 или новее (`rustup` поставит его сам
+по `rust-toolchain.toml`).
+
+```sh
+cargo fmt --all --check
+cargo clippy --all-targets -- -D warnings
+cargo test --workspace
+cargo run -p tools
+```
+
+## Перед первой сессией
+
+```sh
+git init
+git add .
+git commit -m "Скелет проекта"
+```
+
+## Первая сессия с агентом
+
+Шаги 1.1 и 1.2 уже выполнены этим скелетом. Работа начинается с шага 1.3.
+
+Текст первого запроса:
+
+> Прочитай CLAUDE.md, docs/process.md, docs/roadmap.md
+> и docs/stages/01-skeleton/spec.md. Начинаем шаг 1.3. Создай файл шага
+> по шаблону, заполни «Цель», «План» и «Тесты» и остановись.
+
+Дальше по `docs/process.md`: прочитать план, задать вопросы, подтвердить,
+после реализации прочитать diff и итог.
