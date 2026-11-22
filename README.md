@@ -24,11 +24,11 @@ docs/stages/         спецификации вех и файлы шагов
 по `rust-toolchain.toml`).
 
 ```sh
-cargo fmt --all --check
-cargo clippy --all-targets -- -D warnings
-cargo test --workspace
+scripts/check.sh      # форматирование, clippy, тесты
 cargo run -p tools
 ```
+
+На Windows скрипт запускается из Git Bash.
 
 ## Перед первой сессией
 

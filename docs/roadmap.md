@@ -55,7 +55,7 @@ RTS на Rust в духе Generals и «В тылу врага», по масш�
 
 - [x] 1.1 Workspace: крейты `sim`, `client`, `tools`, один тест
 - [x] 1.2 `CLAUDE.md` и документы в `docs/`
-- [ ] 1.3 Скрипт проверки: `rustfmt`, `clippy`, тесты через `cargo-nextest`
+- [x] 1.3 Скрипт проверки: `rustfmt`, `clippy`, тесты (`cargo test`, без `cargo-nextest`)
 - [ ] 1.4 CI с матрицей macOS, Windows, Linux; проверка на `todo!` в коде
 - [ ] 1.5 Окно Bevy: плоскость, солнце, камера; версия Bevy зафиксирована
 - [ ] 1.6 Оверлей: FPS и номер тика
