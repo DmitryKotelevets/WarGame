@@ -8,7 +8,7 @@
 CLAUDE.md            правила для агента
 Cargo.toml           workspace
 crates/sim           детерминированное ядро игры
-crates/client        клиент (Bevy подключается на шаге 1.5)
+crates/client        клиент на Bevy 0.20.1: окно, рендер, ввод
 crates/tools         запуск без окна, позже MCP-сервер
 docs/design.md       какая игра
 docs/roadmap.md      вехи и шаги
@@ -20,13 +20,22 @@ docs/stages/         спецификации вех и файлы шагов
 
 ## Проверка
 
-Нужен стабильный Rust 1.85 или новее (`rustup` поставит его сам
+Нужен стабильный Rust 1.97.1 или новее (`rustup` поставит его сам
 по `rust-toolchain.toml`).
 
 ```sh
 scripts/check.sh      # форматирование, clippy, тесты
 cargo run -p tools
 ```
+
+## Запуск клиента
+
+```sh
+cargo run -p client                              # обычная сборка
+cargo run -p client --features dynamic_linking   # быстрая пересборка в разработке
+```
+
+Первая сборка Bevy занимает несколько минут и около 12 ГБ в `target`.
 
 На Windows скрипт запускается из Git Bash.
 

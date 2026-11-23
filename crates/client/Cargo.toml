@@ -8,5 +8,16 @@ publish.workspace = true
 [lints]
 workspace = true
 
+[features]
+# Быстрая пересборка в разработке: Bevy собирается один раз в отдельную
+# динамическую библиотеку, и после правки своего кода линковка занимает
+# секунды вместо десятков секунд. Запуск:
+#   cargo run -p client --features dynamic_linking
+# По умолчанию выключено: такую сборку нельзя отдать игроку одним файлом.
+dynamic_linking = ["bevy/dynamic_linking"]
+
 [dependencies]
 sim = { path = "../sim" }
+# Знак `=` фиксирует версию точно: API Bevy меняется в каждом выпуске,
+# обновление делается отдельным шагом (решение № 21 в docs/decisions.md).
+bevy = "=0.20.1"
