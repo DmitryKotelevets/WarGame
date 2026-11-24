@@ -9,3 +9,8 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+
+[dev-dependencies]
+# Тесты на свойствах: проверяют правило на сотнях случайных чисел.
+# Подключается только при `cargo test`, в игру не попадает.
+proptest = "1.12.0"
