@@ -15,9 +15,12 @@
 
 pub mod fixed;
 pub mod fixed_sqrt;
+pub mod step;
+pub mod tick;
 pub mod unit;
 pub mod unit_store;
 pub mod vec2;
+pub mod world;
 
 /// Версия правил симуляции. Увеличивается при любом изменении логики,
 /// после которого старые реплеи перестают сходиться.
