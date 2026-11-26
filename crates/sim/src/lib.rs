@@ -15,6 +15,8 @@
 
 pub mod fixed;
 pub mod fixed_sqrt;
+pub mod unit;
+pub mod unit_store;
 pub mod vec2;
 
 /// Версия правил симуляции. Увеличивается при любом изменении логики,
