@@ -25,8 +25,13 @@ docs/stages/         спецификации вех и файлы шагов
 
 ```sh
 scripts/check.sh      # форматирование, clippy, тесты
+scripts/check-todo.sh # в коде нет заглушек todo! и unimplemented!
 cargo run -p tools
 ```
+
+Обе проверки запускает CI (GitHub Actions, `.github/workflows/ci.yml`)
+на macOS, Windows и Linux: при каждом push в `master` и в каждом
+pull request.
 
 ## Запуск клиента
 

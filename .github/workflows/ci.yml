@@ -1,0 +1,83 @@
+# Проверка проекта на серверах GitHub (CI).
+#
+# Запускает тот же scripts/check.sh, что и локально, но сразу на трёх
+# системах: так ошибка, которая проявляется только на Windows или Linux,
+# видна до того, как попадёт в master. Позже здесь же будет сравниваться
+# хеш симуляции между платформами (шаг 2.11).
+
+name: CI
+
+on:
+  # Каждый push в основную ветку.
+  push:
+    branches: [master]
+  # Каждый pull request, до слияния.
+  pull_request:
+  # Кнопка «Run workflow» на странице Actions: запуск вручную.
+  workflow_dispatch:
+
+# Сценарию достаточно читать репозиторий. Писать в него он не может,
+# даже если в один из шагов попадёт чужой код.
+permissions:
+  contents: read
+
+# Новый push в ту же ветку отменяет ещё не законченную проверку
+# предыдущего: её результат уже никому не нужен.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Без отладочной информации: в CI отладчиком никто не пользуется,
+  # а сборка Bevy становится быстрее, папка target и кеш в разы меньше.
+  # Локальная сборка этих переменных не видит и не меняется.
+  CARGO_PROFILE_DEV_DEBUG: 0
+  CARGO_PROFILE_TEST_DEBUG: 0
+  # Цветной вывод cargo в логе.
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: check (${{ matrix.os }})
+    strategy:
+      # Падение на одной системе не отменяет остальные: видна вся картина.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # Bevy на Linux собирается с системными библиотеками звука (ALSA),
+      # устройств ввода (udev) и окон (X11, Wayland). Список из
+      # docs/linux_dependencies.md в исходниках Bevy 0.20.1.
+      - name: Системные библиотеки для Bevy (только Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            g++ pkg-config libx11-dev libasound2-dev libudev-dev \
+            libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+
+      # rustup на раннерах уже есть. Без аргументов эта команда ставит
+      # то, что записано в rust-toolchain.toml: канал и компоненты.
+      - name: Установка Rust по rust-toolchain.toml
+        run: rustup toolchain install
+
+      # Сохраняет собранные зависимости между запусками. Ключ кеша
+      # строится из Cargo.lock, версии компилятора и системы.
+      - uses: Swatinem/rust-cache@v2
+
+      # shell: bash нужен для Windows, где по умолчанию PowerShell.
+      # Там это Git Bash, который есть на раннере.
+      - name: scripts/check.sh
+        shell: bash
+        run: scripts/check.sh
+
+  no-todo:
+    name: no todo!
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: scripts/check-todo.sh
+        run: scripts/check-todo.sh
