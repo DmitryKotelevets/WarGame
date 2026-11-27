@@ -15,6 +15,7 @@
 
 pub mod fixed;
 pub mod fixed_sqrt;
+pub mod rng;
 pub mod step;
 pub mod tick;
 pub mod unit;

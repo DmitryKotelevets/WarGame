@@ -40,14 +40,14 @@ mod tests {
 
     #[test]
     fn step_advances_tick_by_one() {
-        let mut world = World::new();
+        let mut world = World::new(0);
         world.step();
         assert_eq!(world.tick, Tick::from_raw(1));
     }
 
     #[test]
     fn hundred_steps_give_tick_hundred() {
-        let mut world = World::new();
+        let mut world = World::new(0);
         for _ in 0..100 {
             world.step();
         }
@@ -56,14 +56,23 @@ mod tests {
 
     #[test]
     fn step_in_empty_world_keeps_it_empty() {
-        let mut world = World::new();
+        let mut world = World::new(0);
         world.step();
         assert!(world.units.is_empty());
     }
 
     #[test]
+    fn step_does_not_touch_the_rng() {
+        // Пока ни одна система не берёт случайных чисел.
+        let mut world = World::new(123);
+        let state_before = world.rng.state();
+        world.step();
+        assert_eq!(world.rng.state(), state_before);
+    }
+
+    #[test]
     fn step_removes_marked_and_keeps_the_rest() {
-        let mut world = World::new();
+        let mut world = World::new(0);
         let stays = world.units.spawn(Vec2Fixed::from_ints(1, 2));
         let dies = world.units.spawn(Vec2Fixed::from_ints(3, 4));
         world.units.mark_for_removal(dies);
@@ -79,7 +88,7 @@ mod tests {
 
     #[test]
     fn marked_unit_is_removed_by_the_same_step() {
-        let mut world = World::new();
+        let mut world = World::new(0);
         let dies = world.units.spawn(Vec2Fixed::ZERO);
         world.units.mark_for_removal(dies);
 

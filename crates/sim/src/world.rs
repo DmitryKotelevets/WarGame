@@ -11,25 +11,30 @@
 //!
 //! Продвигает мир `World::step()` из `step.rs`.
 
+use crate::rng::Rng;
 use crate::tick::Tick;
 use crate::unit_store::UnitStore;
 
 /// Всё состояние симуляции.
-#[derive(Default)]
 pub struct World {
     /// Сколько шагов уже выполнено. Во время шага это номер тика,
     /// который сейчас считается.
     pub tick: Tick,
     /// Все юниты.
     pub units: UnitStore,
+    /// Единственный источник случайности в игре.
+    pub rng: Rng,
 }
 
 impl World {
-    /// Мир в начале игры: тик 0, юнитов нет.
-    pub fn new() -> World {
+    /// Мир в начале игры: тик 0, юнитов нет. Сид задаёт всю будущую
+    /// случайность: два мира с одним сидом и одними командами проживут
+    /// одинаковую жизнь.
+    pub fn new(seed: u64) -> World {
         World {
             tick: Tick::ZERO,
             units: UnitStore::new(),
+            rng: Rng::new(seed),
         }
     }
 }
@@ -40,8 +45,16 @@ mod tests {
 
     #[test]
     fn new_world_is_empty_at_tick_zero() {
-        let world = World::new();
+        let world = World::new(0);
         assert_eq!(world.tick, Tick::ZERO);
         assert!(world.units.is_empty());
+    }
+
+    #[test]
+    fn new_world_seeds_its_rng() {
+        let world = World::new(777);
+        assert_eq!(world.rng, Rng::new(777));
+        // Другой сид это другой мир.
+        assert_ne!(World::new(778).rng, world.rng);
     }
 }
