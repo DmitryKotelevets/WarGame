@@ -12,6 +12,7 @@
 //! освобождали. У нового жильца поколение другое, и старый идентификатор
 //! перестаёт подходить.
 
+use crate::hash::StateHasher;
 use crate::vec2::Vec2Fixed;
 
 /// Идентификатор юнита. Поля открыты: подделанный идентификатор безвреден
@@ -33,4 +34,21 @@ pub struct Unit {
     /// лежит, зато при обходе всех юнитов не нужно передавать его отдельно.
     pub id: UnitId,
     pub position: Vec2Fixed,
+}
+
+impl Unit {
+    /// Записывает юнит в хеш мира.
+    pub fn hash_into(&self, hasher: &mut StateHasher) {
+        // Структуры разбираются на поля целиком. Если в `Unit`, `UnitId`
+        // или `Vec2Fixed` появится новое поле, эти строки перестанут
+        // компилироваться и напомнят добавить его в хеш.
+        let Unit { id, position } = *self;
+        let UnitId { index, generation } = id;
+        let Vec2Fixed { x, y } = position;
+
+        hasher.write_u32(index);
+        hasher.write_u32(generation);
+        hasher.write_i64(x.raw());
+        hasher.write_i64(y.raw());
+    }
 }

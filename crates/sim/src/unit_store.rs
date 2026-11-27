@@ -15,6 +15,7 @@
 //!   а `remove_marked` в конце тика освобождает ячейки. Так все системы
 //!   одного тика видят один и тот же набор юнитов.
 
+use crate::hash::StateHasher;
 use crate::unit::{Unit, UnitId};
 use crate::vec2::Vec2Fixed;
 
@@ -161,6 +162,41 @@ impl UnitStore {
     /// Юнитов нет совсем.
     pub fn is_empty(&self) -> bool {
         self.len() == 0
+    }
+
+    /// Записывает хранилище в хеш мира. Функция живёт здесь, потому что
+    /// ячейки закрыты.
+    ///
+    /// Свободные ячейки тоже записываются: их поколения определяют,
+    /// какие идентификаторы получат будущие юниты.
+    pub fn hash_into(&self, hasher: &mut StateHasher) {
+        // Разбор на поля целиком: новое поле без строки в хеше
+        // не скомпилируется (то же в `Unit::hash_into`).
+        let UnitStore { slots } = self;
+
+        let slot_count = match u64::try_from(slots.len()) {
+            Ok(count) => count,
+            Err(_) => panic!("UnitStore: slot count does not fit in u64"),
+        };
+        hasher.write_u64(slot_count);
+
+        for slot in slots {
+            let Slot {
+                generation,
+                unit,
+                marked_for_removal,
+            } = slot;
+
+            hasher.write_u32(*generation);
+            hasher.write_bool(*marked_for_removal);
+            match unit {
+                Some(unit) => {
+                    hasher.write_bool(true);
+                    unit.hash_into(hasher);
+                }
+                None => hasher.write_bool(false),
+            }
+        }
     }
 }
 
